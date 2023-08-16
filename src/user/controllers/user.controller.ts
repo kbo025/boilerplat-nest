@@ -12,38 +12,53 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { CreateUserDto, UpdateUserDto } from '../dtos/user.dto';
+import { UsersService } from '../services/users.service';
 
 @Controller('users')
 export class UserController {
+  constructor(private readonly usersService: UsersService) {}
+
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  create(@Body() dto: CreateUserDto) {
-    return { dto };
+  async create(@Body() dto: CreateUserDto) {
+    const response = await this.usersService.createUser(dto);
+    return response;
   }
 
   @Get()
-  list(
+  async list(
     @Query('page', ParseIntPipe) page = 1,
     @Query('itemsPerPage', ParseIntPipe) itemsPerPage = 100,
     @Query('filters') filters: object,
   ) {
-    return { page, itemsPerPage, filters };
+    const response = await this.usersService.listUsers(
+      page,
+      itemsPerPage,
+      filters,
+    );
+    return response;
   }
 
   @Get('/:id')
-  get(@Param('id', ParseIntPipe) id: number) {
-    return { id };
+  async get(@Param('id', ParseIntPipe) id: number) {
+    const response = await this.usersService.getUser(id);
+    return response;
   }
 
   @Patch('/:id')
   @HttpCode(HttpStatus.CREATED)
-  update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdateUserDto) {
-    return { id, dto };
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: UpdateUserDto,
+  ) {
+    const response = await this.usersService.updateUser(id, dto);
+    return response;
   }
 
   @Delete('/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  delete(@Param('id', ParseIntPipe) id: number) {
-    return { id };
+  async delete(@Param('id', ParseIntPipe) id: number) {
+    const response = await this.usersService.deleteUser(id);
+    return response;
   }
 }
