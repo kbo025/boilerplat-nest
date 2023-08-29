@@ -1,9 +1,13 @@
-import { BaseRbacEntity } from './base.entity';
-import { PermissionEntity } from './permission.entity';
+import { IBaseRbacEntity } from './base.entity';
+import { IPermissionEntity } from './permission.entity';
 
-export class RoleEntity extends BaseRbacEntity {
-  protected static type = 1;
+export interface IRoleEntity extends IBaseRbacEntity {
+  readonly type: 1;
+  id: number;
+  name: string;
+  description: string;
+  slug: string;
 
-  childs: RoleEntity[];
-  permissions: PermissionEntity[];
+  parent: null;
+  children: IPermissionEntity[] | null;
 }

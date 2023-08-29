@@ -1,7 +1,12 @@
-import { BaseRbacEntity } from './base.entity';
+import { IBaseRbacEntity } from './base.entity';
 
-export class PermissionEntity extends BaseRbacEntity {
-  protected static type = 2;
+export interface IPermissionEntity extends IBaseRbacEntity {
+  readonly type: 2;
+  id: number;
+  name: string;
+  description: string;
+  slug: string;
 
-  childs: PermissionEntity[];
+  parent: IBaseRbacEntity;
+  children: null;
 }

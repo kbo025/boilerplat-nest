@@ -8,6 +8,8 @@ import { PgdbModule } from './pgdb/pgdb.module';
 import { ConfigModule } from '@nestjs/config';
 import { config, configSchema, enviroments } from './config';
 
+console.log('config', config);
+
 @Module({
   imports: [
     AuthModule,

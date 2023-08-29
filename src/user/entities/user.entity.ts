@@ -1,5 +1,5 @@
-export class UserEntity {
-  id: string;
+export interface IUserEntity {
+  id: number;
   email: string;
   hashPassword: string;
 }

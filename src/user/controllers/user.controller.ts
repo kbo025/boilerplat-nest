@@ -10,13 +10,22 @@ import {
   ParseIntPipe,
   HttpCode,
   HttpStatus,
+  Inject,
 } from '@nestjs/common';
 import { CreateUserDto, UpdateUserDto } from '../dtos/user.dto';
 import { UsersService } from '../services/users.service';
+import { IQueryResponse } from 'src/common/types/paginator/paginator.type';
+import { IUserEntity } from '../entities/user.entity';
+import { BaseQueryDto } from 'src/common/types/paginator/baseQuery.dto';
+import { config } from 'src/config';
+import { ConfigType } from '@nestjs/config';
 
 @Controller('users')
 export class UserController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    @Inject(config.KEY) private configService: ConfigType<typeof config>,
+  ) {}
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
@@ -25,21 +34,27 @@ export class UserController {
     return response;
   }
 
+  @Get('/teste')
+  @HttpCode(HttpStatus.OK)
+  async teste() {
+    console.log(this.configService);
+    const apiKey = this.configService.apiKey;
+    return { apiKey };
+  }
+
   @Get()
+  @HttpCode(HttpStatus.OK)
   async list(
-    @Query('page', ParseIntPipe) page = 1,
-    @Query('itemsPerPage', ParseIntPipe) itemsPerPage = 100,
-    @Query('filters') filters: object,
-  ) {
-    const response = await this.usersService.listUsers(
-      page,
-      itemsPerPage,
-      filters,
-    );
+    @Query() params: BaseQueryDto,
+  ): Promise<IQueryResponse<IUserEntity>> {
+    console.log(params);
+    const response = await this.usersService.listUsers(params);
+
     return response;
   }
 
   @Get('/:id')
+  @HttpCode(HttpStatus.OK)
   async get(@Param('id', ParseIntPipe) id: number) {
     const response = await this.usersService.getUser(id);
     return response;

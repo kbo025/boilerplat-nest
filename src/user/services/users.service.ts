@@ -1,26 +1,31 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { CreateUserDto } from '../dtos/user.dto';
+import { CreateUserDto, QueryUserDto } from '../dtos/user.dto';
 import { UpdateUserDto } from '../dtos/user.dto';
 import { Client } from 'pg';
+import { IQueryResponse } from 'src/common/types/paginator/paginator.type';
+import { IUserEntity } from '../entities/user.entity';
 
 @Injectable()
 export class UsersService {
-  constructor(@Inject('PG') private clientPg: Client) {}
-
-  createUser(dto: CreateUserDto) {
+  async createUser(dto: CreateUserDto) {
     // TODO: create statement with pg
     throw new Error('Method not implemented.');
   }
-  listUsers(page: number, itemsPerPage: number, filters: object) {
+
+  async listUsers(dto: QueryUserDto): Promise<IQueryResponse<IUserEntity>> {
+    console.log(dto);
     throw new Error('Method not implemented.');
   }
-  getUser(id: number) {
+
+  async getUser(id: number) {
     throw new Error('Method not implemented.');
   }
-  updateUser(id: number, dto: UpdateUserDto) {
+
+  async updateUser(id: number, dto: UpdateUserDto) {
     throw new Error('Method not implemented.');
   }
-  deleteUser(id: number) {
+
+  async deleteUser(id: number) {
     throw new Error('Method not implemented.');
   }
 }

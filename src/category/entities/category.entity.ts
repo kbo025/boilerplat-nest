@@ -1,9 +1,10 @@
-export class CategoryEntity {
-  id: string;
+export interface ICategoryEntity {
+  id: number;
   name: string;
   description: string;
   slug: string;
   order: number;
 
-  childs: CategoryEntity[];
+  parent?: ICategoryEntity;
+  childrens?: ICategoryEntity[];
 }

@@ -1,8 +1,10 @@
-export class BaseRbacEntity {
-  protected static type: number;
-  id: string;
+export interface IBaseRbacEntity {
+  readonly type: 1 | 2;
+  id: number;
   name: string;
   description: string;
-  parentId: number;
   slug: string;
+
+  parent: IBaseRbacEntity | null;
+  children: IBaseRbacEntity[] | null;
 }
