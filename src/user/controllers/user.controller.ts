@@ -11,15 +11,23 @@ import {
   HttpCode,
   HttpStatus,
   Inject,
+  UseGuards,
 } from '@nestjs/common';
-import { CreateUserDto, UpdateUserDto } from '../dtos/user.dto';
+import {
+  CreateUserDto,
+  FilterUserDto,
+  QueryUserDto,
+  UpdateUserDto,
+} from '../dtos/user.dto';
 import { UsersService } from '../services/users.service';
-import { IQueryResponse } from 'src/common/types/paginator/paginator.type';
+import { QueryResponse } from 'src/common/types/paginator/paginator.type';
 import { IUserEntity } from '../entities/user.entity';
-import { BaseQueryDto } from 'src/common/types/paginator/baseQuery.dto';
 import { config } from 'src/config';
 import { ConfigType } from '@nestjs/config';
+import { ApiKeyGuard } from 'src/auth/guards/api-key.guard';
+import { Public } from 'src/auth/decorators/public.decorator';
 
+@UseGuards(ApiKeyGuard)
 @Controller('users')
 export class UserController {
   constructor(
@@ -28,6 +36,7 @@ export class UserController {
   ) {}
 
   @Post()
+  @Public()
   @HttpCode(HttpStatus.CREATED)
   async create(@Body() dto: CreateUserDto) {
     const response = await this.usersService.createUser(dto);
@@ -45,11 +54,11 @@ export class UserController {
   @Get()
   @HttpCode(HttpStatus.OK)
   async list(
-    @Query() params: BaseQueryDto,
-  ): Promise<IQueryResponse<IUserEntity>> {
-    console.log(params);
-    const response = await this.usersService.listUsers(params);
-
+    @Query() params: QueryUserDto,
+  ): Promise<
+    QueryResponse<IUserEntity, FilterUserDto> | QueryResponse<IUserEntity>
+  > {
+    const response = await this.usersService.list(params);
     return response;
   }
 

@@ -10,7 +10,7 @@ export const enviroments = {
 export const config = registerAs('config', () => {
   return {
     pg: {
-      name: process.env.POSTGRES_DB,
+      name: process.env.POSTGRES_NAME,
       user: process.env.POSTGRES_USER,
       pass: process.env.POSTGRES_PASS,
       port: process.env.POSTGRES_PORT,
@@ -22,7 +22,7 @@ export const config = registerAs('config', () => {
 
 export const configSchema = Joi.object({
   API_KEY: Joi.number().required(),
-  POSTGRES_DB: Joi.string().required(),
+  POSTGRES_NAME: Joi.string().required(),
   POSTGRES_USER: Joi.string().required(),
   POSTGRES_PASS: Joi.string().required(),
   POSTGRES_PORT: Joi.number().required(),

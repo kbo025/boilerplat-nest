@@ -1,4 +1,4 @@
-import { Column, Entity, OneToMany } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { IUserEntity } from 'src/user/entities/user.entity';
 import { BasePgEntity } from '../basePg.entity';
 import { IUserRbacEntity } from 'src/rbac/entities/user.entity';
@@ -9,6 +9,9 @@ export class UserPgEntity
   extends BasePgEntity
   implements IUserEntity, IUserRbacEntity
 {
+  @PrimaryGeneratedColumn()
+  id: number;
+
   @Column({
     unique: true,
   })

@@ -6,7 +6,7 @@ import {
   DeleteDateColumn,
 } from 'typeorm';
 
-export class BasePgEntity {
+export abstract class BasePgEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -23,11 +23,13 @@ export class BasePgEntity {
 
   @UpdateDateColumn({
     type: 'timestamptz',
+    default: () => null,
   })
-  updateAt!: Date;
+  updateAt?: Date;
 
   @DeleteDateColumn({
     type: 'timestamptz',
+    default: () => null,
   })
   deletedAt?: Date;
 }

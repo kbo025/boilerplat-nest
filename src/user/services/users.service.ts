@@ -1,31 +1,52 @@
 import { Injectable, Inject } from '@nestjs/common';
-import { CreateUserDto, QueryUserDto } from '../dtos/user.dto';
+import { CreateUserDto, FilterUserDto, QueryUserDto } from '../dtos/user.dto';
 import { UpdateUserDto } from '../dtos/user.dto';
-import { Client } from 'pg';
-import { IQueryResponse } from 'src/common/types/paginator/paginator.type';
+import {
+  IPaginatorService,
+  QueryResponse,
+} from 'src/common/types/paginator/paginator.type';
 import { IUserEntity } from '../entities/user.entity';
+import { IUserRepository } from '../contracts/IUser.repository';
 
 @Injectable()
-export class UsersService {
+export class UsersService
+  implements IPaginatorService<IUserEntity, FilterUserDto>
+{
+  constructor(
+    @Inject(IUserRepository) private userRepository: IUserRepository,
+  ) {}
+
   async createUser(dto: CreateUserDto) {
-    // TODO: create statement with pg
-    throw new Error('Method not implemented.');
+    const response = await this.userRepository.createUser(dto);
+    return response;
   }
 
-  async listUsers(dto: QueryUserDto): Promise<IQueryResponse<IUserEntity>> {
-    console.log(dto);
-    throw new Error('Method not implemented.');
+  async list(
+    dto: QueryUserDto,
+  ): Promise<
+    QueryResponse<IUserEntity, FilterUserDto> | QueryResponse<IUserEntity>
+  > {
+    const response = await this.userRepository.findAllUsers(dto);
+    return response;
   }
 
-  async getUser(id: number) {
-    throw new Error('Method not implemented.');
+  async getUser(id: number | string) {
+    const response = await this.userRepository.findUser(id);
+    return response;
   }
 
-  async updateUser(id: number, dto: UpdateUserDto) {
-    throw new Error('Method not implemented.');
+  async findByEmail(email: string) {
+    const response = await this.userRepository.findByEmail(email);
+    return response;
   }
 
-  async deleteUser(id: number) {
-    throw new Error('Method not implemented.');
+  async updateUser(id: number | string, dto: UpdateUserDto) {
+    const response = await this.userRepository.updateUser(id, dto);
+    return response;
+  }
+
+  async deleteUser(id: number | string) {
+    const response = await this.userRepository.deleteUser(id);
+    return response;
   }
 }
