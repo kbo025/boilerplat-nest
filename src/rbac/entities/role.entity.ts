@@ -1,5 +1,4 @@
 import { IBaseRbacEntity } from './base.entity';
-import { IPermissionEntity } from './permission.entity';
 
 export interface IRoleEntity extends IBaseRbacEntity {
   readonly type: 1;
@@ -8,6 +7,6 @@ export interface IRoleEntity extends IBaseRbacEntity {
   description: string;
   slug: string;
 
-  parent: null;
-  children: IPermissionEntity[] | null;
+  parent: null | IRoleEntity;
+  children: IBaseRbacEntity[] | null;
 }

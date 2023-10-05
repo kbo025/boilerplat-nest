@@ -17,7 +17,7 @@ import {
   UpdateUserDto,
 } from 'src/user/dtos/user.dto';
 import { IUserEntity } from 'src/user/entities/user.entity';
-import bcrypt from 'bcrypt';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UserPgRepository implements IUserRepository {
@@ -53,6 +53,7 @@ export class UserPgRepository implements IUserRepository {
       email: data.email,
       hashPassword: await bcrypt.hash(data.password, 10),
     });
+
     return user;
   }
 
@@ -61,15 +62,10 @@ export class UserPgRepository implements IUserRepository {
     if (!user) {
       throw new NotFoundException('USER_NOT_FOUND');
     }
-    const { email } = data;
-    const exists = await this.userRep.findOne({ where: { email } });
-    if (exists && exists.id != id) {
-      throw new ConflictException('USER_ALREADY_EXITS');
-    }
 
     const password = await bcrypt.hash(data.password, 10);
-    await this.userRep.update({ id }, { hashPassword: password, email });
-    return { ...user, email };
+    await this.userRep.update({ id }, { hashPassword: password });
+    return { ...user };
   }
 
   async deleteUser(id: number): Promise<boolean> {
@@ -116,8 +112,8 @@ export class UserPgRepository implements IUserRepository {
         totalItems,
         currentPage: page,
         totalPages,
-        sortBy: sortBy,
-        filter: filters,
+        sortBy,
+        filters,
       },
     };
 

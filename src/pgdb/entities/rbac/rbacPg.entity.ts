@@ -1,6 +1,6 @@
 import { IBaseRbacEntity } from 'src/rbac/entities/base.entity';
 import { BasePgEntity } from '../basePg.entity';
-import { Column, Entity, OneToMany, JoinColumn, ManyToOne } from 'typeorm';
+import { Column, Entity } from 'typeorm';
 
 @Entity({ name: 'rbac-roles-permissions' })
 export class RbacPgEntity extends BasePgEntity implements IBaseRbacEntity {
@@ -15,11 +15,4 @@ export class RbacPgEntity extends BasePgEntity implements IBaseRbacEntity {
 
   @Column({ type: 'varchar', length: 256, unique: true })
   slug: string;
-
-  @ManyToOne(() => RbacPgEntity, (parent) => parent.children)
-  @JoinColumn({ name: 'parent_id' })
-  parent: RbacPgEntity | null;
-
-  @OneToMany(() => RbacPgEntity, (child) => child.parent)
-  children: RbacPgEntity[] | null;
 }

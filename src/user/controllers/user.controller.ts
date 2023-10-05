@@ -18,6 +18,7 @@ import {
   FilterUserDto,
   QueryUserDto,
   UpdateUserDto,
+  UserDto,
 } from '../dtos/user.dto';
 import { UsersService } from '../services/users.service';
 import { QueryResponse } from 'src/common/types/paginator/paginator.type';
@@ -27,7 +28,7 @@ import { ConfigType } from '@nestjs/config';
 import { ApiKeyGuard } from 'src/auth/guards/api-key.guard';
 import { Public } from 'src/auth/decorators/public.decorator';
 
-@UseGuards(ApiKeyGuard)
+//@UseGuards(ApiKeyGuard)
 @Controller('users')
 export class UserController {
   constructor(
@@ -38,7 +39,7 @@ export class UserController {
   @Post()
   @Public()
   @HttpCode(HttpStatus.CREATED)
-  async create(@Body() dto: CreateUserDto) {
+  async create(@Body() dto: CreateUserDto): Promise<UserDto> {
     const response = await this.usersService.createUser(dto);
     return response;
   }
@@ -65,6 +66,7 @@ export class UserController {
   @Get('/:id')
   @HttpCode(HttpStatus.OK)
   async get(@Param('id', ParseIntPipe) id: number) {
+    console.log(5);
     const response = await this.usersService.getUser(id);
     return response;
   }

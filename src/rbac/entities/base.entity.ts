@@ -1,10 +1,12 @@
+export enum TypeRbac {
+  ROLE = 1,
+  PERMISSION = 2,
+}
+
 export interface IBaseRbacEntity {
-  readonly type: 1 | 2;
+  readonly type: TypeRbac;
   id: number;
   name: string;
   description: string;
   slug: string;
-
-  parent: IBaseRbacEntity | null;
-  children: IBaseRbacEntity[] | null;
 }

@@ -14,6 +14,7 @@ export class UserPgEntity
 
   @Column({
     unique: true,
+    update: false,
   })
   email: string;
 

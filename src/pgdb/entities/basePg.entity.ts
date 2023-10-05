@@ -1,3 +1,4 @@
+import { Exclude } from 'class-transformer';
 import {
   Column,
   CreateDateColumn,
@@ -10,26 +11,24 @@ export abstract class BasePgEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Exclude()
   @Column({
     default: true,
   })
   active!: boolean;
 
+  @Exclude()
   @CreateDateColumn({
     type: 'timestamptz',
     default: () => 'CURRENT_TIMESTAMP',
   })
   createAt: Date;
 
-  @UpdateDateColumn({
-    type: 'timestamptz',
-    default: () => null,
-  })
+  @Exclude()
+  @UpdateDateColumn({ type: 'timestamptz' })
   updateAt?: Date;
 
-  @DeleteDateColumn({
-    type: 'timestamptz',
-    default: () => null,
-  })
+  @Exclude()
+  @DeleteDateColumn({ type: 'timestamptz' })
   deletedAt?: Date;
 }

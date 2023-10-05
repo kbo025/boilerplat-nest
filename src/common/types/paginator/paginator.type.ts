@@ -18,7 +18,7 @@ export type QueryResponse<E, F = null> = {
     currentPage: number;
     totalPages: number;
     sortBy?: [string, Order][];
-    filter?: F | null;
+    filters?: F | null;
   };
 };
 

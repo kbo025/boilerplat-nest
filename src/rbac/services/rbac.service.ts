@@ -1,37 +1,82 @@
-import { Injectable } from '@nestjs/common';
-import { CreateRbacDto } from '../dtos/rbac.dto';
+import { Inject, Injectable } from '@nestjs/common';
+import {
+  CreateRbacDto,
+  FilterRbacDto,
+  QueryRbacDto,
+  RbacDto,
+  RbacRelationsDto,
+} from '../dtos/rbac.dto';
 import { UpdateRbacDto } from '../dtos/rbac.dto';
+import { IRbacRepository } from '../contracts/IRbac.repository';
+import { QueryResponse } from 'src/common/types/paginator/paginator.type';
 
 @Injectable()
 export class RbacService {
-  createRole(dto: CreateRbacDto) {
-    throw new Error('Method not implemented.');
+  constructor(
+    @Inject(IRbacRepository) private readonly rbacRep: IRbacRepository,
+  ) {}
+
+  async createPermission(dto: CreateRbacDto): Promise<RbacDto> {
+    const response = await this.rbacRep.create(dto);
+    return response;
   }
-  listRoles(page: number, itemsPerPage: number, filters: object) {
-    throw new Error('Method not implemented.');
+
+  async listPermissions(
+    params: QueryRbacDto,
+  ): Promise<QueryResponse<RbacDto, FilterRbacDto> | QueryResponse<RbacDto>> {
+    const response = await this.rbacRep.list(params);
+    return response;
   }
-  getRole(slug: string) {
-    throw new Error('Method not implemented.');
+
+  async getPermission(slug: string): Promise<RbacDto> {
+    const response = await this.rbacRep.get(slug);
+    return response;
   }
-  updateRole(slug: string, dto: UpdateRbacDto) {
-    throw new Error('Method not implemented.');
+
+  async updatePermission(slug: string, dto: UpdateRbacDto): Promise<RbacDto> {
+    const response = await this.rbacRep.update(slug, dto);
+    return response;
   }
-  deleteRole(slug: string) {
-    throw new Error('Method not implemented.');
+
+  async deletePermission(slug: string): Promise<boolean> {
+    const response = await this.rbacRep.remove(slug);
+    return response;
   }
-  async createPermission(dto: CreateRbacDto) {
-    throw new Error('Method not implemented.');
+
+  async revoke(dto: RbacRelationsDto): Promise<boolean> {
+    const response = await this.rbacRep.revoke(dto);
+    return response;
   }
-  async listPermissions(page: number, itemsPerPage: number, filters: object) {
-    throw new Error('Method not implemented.');
+
+  async assing(dto: RbacRelationsDto): Promise<boolean> {
+    const response = await this.rbacRep.assing(dto);
+    return response;
   }
-  async getPermission(slug: string) {
-    throw new Error('Method not implemented.');
+
+  async createRole(dto: CreateRbacDto) {
+    const response = await this.rbacRep.create(dto);
+    return response;
   }
-  async updatePermission(slug: string, dto: UpdateRbacDto) {
-    throw new Error('Method not implemented.');
+
+  async getRole(slug: string): Promise<RbacDto> {
+    const response = await this.rbacRep.get(slug);
+    return response;
   }
-  async deletePermission(slug: string) {
-    throw new Error('Method not implemented.');
+
+  async listRoles(
+    params: QueryRbacDto,
+  ): Promise<QueryResponse<RbacDto, FilterRbacDto> | QueryResponse<RbacDto>> {
+    const response = await this.rbacRep.list(params);
+    return response;
+  }
+
+  async updateRole(slug: string, dto: UpdateRbacDto) {
+    const response = await this.rbacRep.update(slug, dto);
+    return response;
+  }
+
+  async deleteRole(slug: string) {
+    const response = await this.rbacRep.remove(slug);
+    return response;
   }
 }

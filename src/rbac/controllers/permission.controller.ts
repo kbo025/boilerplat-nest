@@ -7,54 +7,60 @@ import {
   Post,
   Body,
   Query,
-  ParseIntPipe,
   HttpCode,
   HttpStatus,
+  UseGuards,
 } from '@nestjs/common';
-import { CreateRbacDto, UpdateRbacDto } from '../dtos/rbac.dto';
+import {
+  CreateRbacDto,
+  FilterRbacDto,
+  QueryRbacDto,
+  RbacDto,
+  UpdateRbacDto,
+} from '../dtos/rbac.dto';
 import { RbacService } from '../services/rbac.service';
+import { ApiKeyGuard } from 'src/auth/guards/api-key.guard';
+import { QueryResponse } from 'src/common/types/paginator/paginator.type';
 
+@UseGuards(ApiKeyGuard)
 @Controller('permissions')
 export class PermissionController {
   constructor(private readonly rbacService: RbacService) {}
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  async create(@Body() dto: CreateRbacDto) {
+  async create(@Body() dto: CreateRbacDto): Promise<RbacDto> {
     const response = await this.rbacService.createPermission(dto);
     return response;
   }
 
   @Get()
   async list(
-    @Query('page', ParseIntPipe) page = 1,
-    @Query('itemsPerPage', ParseIntPipe) itemsPerPage = 100,
-    @Query('filters') filters: object,
-  ) {
-    const response = await this.rbacService.listPermissions(
-      page,
-      itemsPerPage,
-      filters,
-    );
+    @Query() params: QueryRbacDto,
+  ): Promise<QueryResponse<RbacDto, FilterRbacDto> | QueryResponse<RbacDto>> {
+    const response = await this.rbacService.listPermissions(params);
     return response;
   }
 
   @Get('/:slug')
-  async get(@Param('slug') slug: string) {
+  async get(@Param('slug') slug: string): Promise<RbacDto> {
     const response = await this.rbacService.getPermission(slug);
     return response;
   }
 
   @Patch('/:slug')
   @HttpCode(HttpStatus.CREATED)
-  async update(@Param('slug') slug: string, @Body() dto: UpdateRbacDto) {
+  async update(
+    @Param('slug') slug: string,
+    @Body() dto: UpdateRbacDto,
+  ): Promise<RbacDto> {
     const response = await this.rbacService.updatePermission(slug, dto);
     return response;
   }
 
   @Delete('/:slug')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async delete(@Param('slug') slug: string) {
+  async delete(@Param('slug') slug: string): Promise<boolean> {
     const response = await this.rbacService.deletePermission(slug);
     return response;
   }
