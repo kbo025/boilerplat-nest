@@ -4,20 +4,19 @@ import {
   FilterRbacDto,
   QueryRbacDto,
   RbacDto,
-  RbacRelationsDto,
 } from '../dtos/rbac.dto';
 import { UpdateRbacDto } from '../dtos/rbac.dto';
+import { TypeRbac } from '../entities/base.entity';
 
 export interface IRbacRepository {
-  revoke(dto: RbacRelationsDto): Promise<boolean>;
-  assing(dto: RbacRelationsDto): Promise<boolean>;
-  get(slug: string): Promise<RbacDto>;
-  create(dto: CreateRbacDto): Promise<RbacDto>;
+  get(type: TypeRbac, slug: string): Promise<RbacDto>;
+  create(type: TypeRbac, dto: CreateRbacDto): Promise<RbacDto>;
   list(
-    params: QueryRbacDto,
+    type: TypeRbac,
+    dto: QueryRbacDto,
   ): Promise<QueryResponse<RbacDto, FilterRbacDto> | QueryResponse<RbacDto>>;
-  update(slug: string, dto: UpdateRbacDto): Promise<RbacDto>;
-  remove(slug: string): Promise<boolean>;
+  update(type: TypeRbac, data: UpdateRbacDto): Promise<RbacDto>;
+  remove(type: TypeRbac, slug: string): Promise<boolean>;
 }
 
 export const IRbacRepository = Symbol('IRbacRepository');

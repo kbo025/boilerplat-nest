@@ -9,6 +9,7 @@ import {
 import { UpdateRbacDto } from '../dtos/rbac.dto';
 import { IRbacRepository } from '../contracts/IRbac.repository';
 import { QueryResponse } from 'src/common/types/paginator/paginator.type';
+import { TypeRbac } from '../entities/base.entity';
 
 @Injectable()
 export class RbacService {
@@ -17,7 +18,7 @@ export class RbacService {
   ) {}
 
   async createPermission(dto: CreateRbacDto): Promise<RbacDto> {
-    const response = await this.rbacRep.create(dto);
+    const response = await this.rbacRep.create(TypeRbac.PERMISSION, dto);
     return response;
   }
 
@@ -54,7 +55,7 @@ export class RbacService {
   }
 
   async createRole(dto: CreateRbacDto) {
-    const response = await this.rbacRep.create(dto);
+    const response = await this.rbacRep.create(TypeRbac.ROLE, dto);
     return response;
   }
 

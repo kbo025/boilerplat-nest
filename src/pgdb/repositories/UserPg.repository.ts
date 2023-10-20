@@ -103,8 +103,7 @@ export class UserPgRepository implements IUserRepository {
     const totalItems = await qb.getCount();
     const { entities } = await qb.getRawAndEntities();
 
-    let totalPages = totalItems / page;
-    totalPages = totalPages + (totalPages % 1 == 0 ? 0 : 1);
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
     const resp: QueryResponse<UserPgEntity, FilterUserDto> = {
       data: entities,
       meta: {

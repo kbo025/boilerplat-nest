@@ -26,7 +26,7 @@ export class RbacDto {
   readonly slug: string;
 }
 
-export class CreateRbacDto extends PartialType(OmitType(RbacDto, ['slug'])) {}
+export class CreateRbacDto extends OmitType(RbacDto, ['slug']) {}
 export class UpdateRbacDto extends PartialType(CreateRbacDto) {}
 export class RbacRelationsDto {
   @ApiProperty({ description: 'Parent slug' })

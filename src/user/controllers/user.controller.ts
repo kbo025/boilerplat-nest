@@ -66,7 +66,6 @@ export class UserController {
   @Get('/:id')
   @HttpCode(HttpStatus.OK)
   async get(@Param('id', ParseIntPipe) id: number) {
-    console.log(5);
     const response = await this.usersService.getUser(id);
     return response;
   }

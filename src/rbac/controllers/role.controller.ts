@@ -9,7 +9,7 @@ import {
   Body,
   HttpCode,
   HttpStatus,
-  UseGuards,
+  // UseGuards,
 } from '@nestjs/common';
 import {
   CreateRbacDto,
@@ -19,10 +19,10 @@ import {
   UpdateRbacDto,
 } from '../dtos/rbac.dto';
 import { RbacService } from '../services/rbac.service';
-import { ApiKeyGuard } from 'src/auth/guards/api-key.guard';
+// import { ApiKeyGuard } from 'src/auth/guards/api-key.guard';
 import { QueryResponse } from 'src/common/types/paginator/paginator.type';
 
-@UseGuards(ApiKeyGuard)
+// @UseGuards(ApiKeyGuard)
 @Controller('roles')
 export class RoleController {
   constructor(private readonly rbacService: RbacService) {}

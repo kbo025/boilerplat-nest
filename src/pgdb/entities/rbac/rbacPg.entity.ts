@@ -1,11 +1,11 @@
-import { IBaseRbacEntity } from 'src/rbac/entities/base.entity';
+import { IBaseRbacEntity, TypeRbac } from 'src/rbac/entities/base.entity';
 import { BasePgEntity } from '../basePg.entity';
 import { Column, Entity } from 'typeorm';
 
 @Entity({ name: 'rbac-roles-permissions' })
 export class RbacPgEntity extends BasePgEntity implements IBaseRbacEntity {
   @Column({ type: 'int' })
-  readonly type: 1 | 2;
+  readonly type: TypeRbac;
 
   @Column({ type: 'varchar', length: 128 })
   name: string;
