@@ -1,7 +1,7 @@
 import { ApiProperty, OmitType, PartialType } from '@nestjs/swagger';
 import {
-  ArrayNotEmpty,
   IsArray,
+  IsEmail,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -28,7 +28,7 @@ export class RbacDto {
 
 export class CreateRbacDto extends OmitType(RbacDto, ['slug']) {}
 export class UpdateRbacDto extends PartialType(CreateRbacDto) {}
-export class RbacRelationsDto {
+export class RbacLinkDto {
   @ApiProperty({ description: 'Parent slug' })
   @IsString()
   @IsNotEmpty()
@@ -36,14 +36,26 @@ export class RbacRelationsDto {
 
   @ApiProperty({ description: 'children array slugs' })
   @IsArray()
-  @ArrayNotEmpty()
-  @IsString({ each: true })
-  children: string[];
+  @IsNotEmpty()
+  @IsString()
+  child: string;
 }
 export class FilterRbacDto {
   @ApiProperty({ description: 'Parent of role/permission' })
   @IsString()
   @IsOptional()
+  readonly slug: string;
+}
+
+export class RbacAssigmentDto {
+  @ApiProperty({ description: 'Email of user' })
+  @IsEmail()
+  @IsNotEmpty()
+  readonly email: string;
+
+  @ApiProperty({ description: 'Slug of Role/Permission' })
+  @IsString()
+  @IsNotEmpty()
   readonly slug: string;
 }
 

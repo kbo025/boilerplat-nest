@@ -87,9 +87,18 @@ export class RbacPgRepository implements IRbacRepository {
     return resp;
   }
 
-  async update(type: TypeRbac, data: UpdateRbacDto): Promise<RbacDto> {
+  async update(
+    type: TypeRbac,
+    slug: string,
+    data: UpdateRbacDto,
+  ): Promise<RbacDto> {
+    const exists = await this.rbacRep.findOne({ where: { slug, type } });
+    if (!exists) {
+      throw new NotFoundException('ROLE_PERMISSION_DO_NOT_EXITS');
+    }
+
     const { name, description } = data;
-    const slug = slugify(name, {
+    const newSlug = slugify(name, {
       replacement: '-',
       remove: undefined,
       lower: true,
@@ -97,14 +106,17 @@ export class RbacPgRepository implements IRbacRepository {
       locale: 'vi',
       trim: true,
     });
-    const exists = await this.rbacRep.findOne({ where: { slug, type } });
-    if (!exists) {
-      throw new NotFoundException('RBAC_DO_NOT_EXITS');
+
+    const newExists = await this.rbacRep.findOne({
+      where: { slug: newSlug, type },
+    });
+    if (newExists) {
+      throw new NotFoundException('ROLE_PERMISSION_ALREADY_EXITS');
     }
 
     const result = await this.rbacRep.update(
       { id: exists.id },
-      { name, description, slug },
+      { name, description, slug: newSlug },
     );
 
     return result.raw;
@@ -119,7 +131,7 @@ export class RbacPgRepository implements IRbacRepository {
       },
     );
     if (resp.affected === 0) {
-      throw new NotFoundException('USER_NOT_FOUND');
+      throw new NotFoundException('ROLE_PERMISSION_NOT_FOUND');
     }
 
     return true;

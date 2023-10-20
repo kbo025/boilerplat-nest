@@ -15,7 +15,7 @@ export interface IRbacRepository {
     type: TypeRbac,
     dto: QueryRbacDto,
   ): Promise<QueryResponse<RbacDto, FilterRbacDto> | QueryResponse<RbacDto>>;
-  update(type: TypeRbac, data: UpdateRbacDto): Promise<RbacDto>;
+  update(type: TypeRbac, slug: string, data: UpdateRbacDto): Promise<RbacDto>;
   remove(type: TypeRbac, slug: string): Promise<boolean>;
 }
 

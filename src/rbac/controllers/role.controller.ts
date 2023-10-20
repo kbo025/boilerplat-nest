@@ -21,6 +21,7 @@ import {
 import { RbacService } from '../services/rbac.service';
 // import { ApiKeyGuard } from 'src/auth/guards/api-key.guard';
 import { QueryResponse } from 'src/common/types/paginator/paginator.type';
+import { TypeRbac } from '../entities/base.entity';
 
 // @UseGuards(ApiKeyGuard)
 @Controller('roles')
@@ -30,7 +31,7 @@ export class RoleController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async create(@Body() dto: CreateRbacDto): Promise<RbacDto> {
-    const response = await this.rbacService.createRole(dto);
+    const response = await this.rbacService.create(TypeRbac.ROLE, dto);
     return response;
   }
 
@@ -38,13 +39,13 @@ export class RoleController {
   async list(
     @Query() params: QueryRbacDto,
   ): Promise<QueryResponse<RbacDto, FilterRbacDto> | QueryResponse<RbacDto>> {
-    const response = await this.rbacService.listRoles(params);
+    const response = await this.rbacService.list(TypeRbac.ROLE, params);
     return response;
   }
 
   @Get('/:slug')
   async get(@Param('slug') slug: string): Promise<RbacDto> {
-    const response = await this.rbacService.getRole(slug);
+    const response = await this.rbacService.get(TypeRbac.ROLE, slug);
     return response;
   }
 
@@ -54,14 +55,14 @@ export class RoleController {
     @Param('slug') slug: string,
     @Body() dto: UpdateRbacDto,
   ): Promise<RbacDto> {
-    const response = await this.rbacService.updateRole(slug, dto);
+    const response = await this.rbacService.update(TypeRbac.ROLE, slug, dto);
     return response;
   }
 
   @Delete('/:slug')
   @HttpCode(HttpStatus.NO_CONTENT)
   async delete(@Param('slug') slug: string): Promise<boolean> {
-    const response = await this.rbacService.deleteRole(slug);
+    const response = await this.rbacService.delete(TypeRbac.ROLE, slug);
     return response;
   }
 }

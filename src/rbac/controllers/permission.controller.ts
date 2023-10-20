@@ -21,16 +21,17 @@ import {
 import { RbacService } from '../services/rbac.service';
 import { ApiKeyGuard } from 'src/auth/guards/api-key.guard';
 import { QueryResponse } from 'src/common/types/paginator/paginator.type';
+import { TypeRbac } from '../entities/base.entity';
 
 @UseGuards(ApiKeyGuard)
-@Controller('permissions')
+@Controller('rbac/permissions')
 export class PermissionController {
   constructor(private readonly rbacService: RbacService) {}
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async create(@Body() dto: CreateRbacDto): Promise<RbacDto> {
-    const response = await this.rbacService.createPermission(dto);
+    const response = await this.rbacService.create(TypeRbac.PERMISSION, dto);
     return response;
   }
 
@@ -38,13 +39,13 @@ export class PermissionController {
   async list(
     @Query() params: QueryRbacDto,
   ): Promise<QueryResponse<RbacDto, FilterRbacDto> | QueryResponse<RbacDto>> {
-    const response = await this.rbacService.listPermissions(params);
+    const response = await this.rbacService.list(TypeRbac.PERMISSION, params);
     return response;
   }
 
   @Get('/:slug')
   async get(@Param('slug') slug: string): Promise<RbacDto> {
-    const response = await this.rbacService.getPermission(slug);
+    const response = await this.rbacService.get(TypeRbac.PERMISSION, slug);
     return response;
   }
 
@@ -54,14 +55,18 @@ export class PermissionController {
     @Param('slug') slug: string,
     @Body() dto: UpdateRbacDto,
   ): Promise<RbacDto> {
-    const response = await this.rbacService.updatePermission(slug, dto);
+    const response = await this.rbacService.update(
+      TypeRbac.PERMISSION,
+      slug,
+      dto,
+    );
     return response;
   }
 
   @Delete('/:slug')
   @HttpCode(HttpStatus.NO_CONTENT)
   async delete(@Param('slug') slug: string): Promise<boolean> {
-    const response = await this.rbacService.deletePermission(slug);
+    const response = await this.rbacService.delete(TypeRbac.PERMISSION, slug);
     return response;
   }
 }
