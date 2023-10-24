@@ -4,13 +4,16 @@ import { BaseQueryDto } from 'src/common/types/paginator/baseQuery.dto';
 import { IQueryDto } from 'src/common/types/paginator/paginator.type';
 import { IUserEntity } from '../entities/user.entity';
 import { Exclude, Expose } from 'class-transformer';
+import { IUserRbacEntity } from 'src/rbac/entities/user.entity';
+import { IAssigmentRbacEntity } from 'src/rbac/entities/assignment.entity';
 
 @Exclude()
-export class UserDto implements IUserEntity {
-  @Expose() id: number;
-  @Expose() email: string;
+export class UserDto implements IUserEntity, IUserRbacEntity {
+  @Expose() readonly id: number;
+  @Expose() readonly email: string;
 
-  hashPassword: string;
+  readonly hashPassword: string;
+  readonly assignments?: IAssigmentRbacEntity[];
 }
 
 export class CreateUserDto {

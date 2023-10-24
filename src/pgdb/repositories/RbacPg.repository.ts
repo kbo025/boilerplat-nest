@@ -67,7 +67,11 @@ export class RbacPgRepository implements IRbacRepository {
     }
 
     qb.skip((page - 1) * itemsPerPage).take(itemsPerPage);
-
+    if (dto.filters.slug) {
+      qb.where('RbacPgEntity.slug like :slug', {
+        email: `%${dto.filters.slug.toLowerCase()}%`,
+      }).andWhere('RbacPgEntity.type like :type', { type });
+    }
     const totalItems = await qb.getCount();
     const { entities } = await qb.getRawAndEntities();
 

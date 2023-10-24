@@ -8,27 +8,51 @@ import {
 } from 'class-validator';
 import { BaseQueryDto } from 'src/common/types/paginator/baseQuery.dto';
 import { IQueryDto } from 'src/common/types/paginator/paginator.type';
+import { IAssigmentRbacEntity } from '../entities/assignment.entity';
+import { IBaseRbacEntity, TypeRbac } from '../entities/base.entity';
+import { Exclude, Expose } from 'class-transformer';
+import { ILinkRbacEntity } from '../entities/link.entity';
+import { IUserRbacEntity } from '../entities/user.entity';
 
-export class RbacDto {
+@Exclude()
+export class RbacDto implements IBaseRbacEntity {
   @ApiProperty({ description: 'Name of role/permission' })
+  @Expose()
   @IsNotEmpty()
   @IsString()
   readonly name: string;
 
   @ApiProperty({ description: 'Description of role/permission' })
+  @Expose()
   @IsOptional()
   @IsString()
   readonly description: string;
 
   @ApiProperty({ description: 'Parent of role/permission' })
+  @Expose()
   @IsString()
   @IsOptional()
   readonly slug: string;
+
+  type: TypeRbac;
+  id: number;
 }
 
-export class CreateRbacDto extends OmitType(RbacDto, ['slug']) {}
+export class CreateRbacDto extends OmitType(RbacDto, ['slug', 'id', 'type']) {}
 export class UpdateRbacDto extends PartialType(CreateRbacDto) {}
-export class RbacLinkDto {
+
+@Exclude()
+export class RbacLinkDto implements ILinkRbacEntity {
+  @ApiProperty({ description: 'Role Parent' })
+  @Expose()
+  parent: IBaseRbacEntity;
+
+  @ApiProperty({ description: 'Permission Child' })
+  @Expose()
+  child: IBaseRbacEntity;
+}
+
+export class CreateRbacLinkDto {
   @ApiProperty({ description: 'Parent slug' })
   @IsString()
   @IsNotEmpty()
@@ -47,7 +71,7 @@ export class FilterRbacDto {
   readonly slug: string;
 }
 
-export class RbacAssigmentDto {
+export class CreateRbacAssigmentDto {
   @ApiProperty({ description: 'Email of user' })
   @IsEmail()
   @IsNotEmpty()
@@ -62,3 +86,8 @@ export class RbacAssigmentDto {
 export class QueryRbacDto
   extends BaseQueryDto<FilterRbacDto>
   implements IQueryDto<FilterRbacDto> {}
+
+export class RbacAssigmentDto implements IAssigmentRbacEntity {
+  permission: IBaseRbacEntity;
+  user: IUserRbacEntity;
+}

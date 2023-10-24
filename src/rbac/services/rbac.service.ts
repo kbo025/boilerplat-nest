@@ -3,9 +3,10 @@ import {
   CreateRbacDto,
   FilterRbacDto,
   QueryRbacDto,
-  RbacAssigmentDto,
+  CreateRbacAssigmentDto,
   RbacDto,
-  RbacLinkDto,
+  CreateRbacLinkDto,
+  RbacAssigmentDto,
 } from '../dtos/rbac.dto';
 import { UpdateRbacDto } from '../dtos/rbac.dto';
 import { IRbacRepository } from '../contracts/IRbac.repository';
@@ -15,6 +16,9 @@ import { plainToClass } from 'class-transformer';
 import { ILinkRepository } from '../contracts/ILink.repository';
 import { IAssignmentRepository } from '../contracts/IAssignment.repository';
 import { IUserRepository } from 'src/user/contracts/IUser.repository';
+import { IAssigmentRbacEntity } from '../entities/assignment.entity';
+import { ILinkRbacEntity } from '../entities/link.entity';
+import { UserDto } from 'src/user/dtos/user.dto';
 
 @Injectable()
 export class RbacService {
@@ -69,7 +73,7 @@ export class RbacService {
     return response;
   }
 
-  async assingRoleToUser(dto: RbacAssigmentDto): Promise<boolean> {
+  async assingRoleToUser(dto: CreateRbacAssigmentDto): Promise<boolean> {
     const PUser = this.userRep.findByEmail(dto.email);
     const PRole = this.rbacRep.get(TypeRbac.ROLE, dto.slug);
     const resp = await Promise.all([PUser, PRole]);
@@ -77,7 +81,7 @@ export class RbacService {
     return response;
   }
 
-  async assingPermissionToUser(dto: RbacAssigmentDto): Promise<boolean> {
+  async assingPermissionToUser(dto: CreateRbacAssigmentDto): Promise<boolean> {
     const PUser = this.userRep.findByEmail(dto.email);
     const PPermission = this.rbacRep.get(TypeRbac.PERMISSION, dto.slug);
     const resp = await Promise.all([PUser, PPermission]);
@@ -85,7 +89,7 @@ export class RbacService {
     return response;
   }
 
-  async assingPermissionToRole(dto: RbacLinkDto): Promise<boolean> {
+  async assingPermissionToRole(dto: CreateRbacLinkDto): Promise<boolean> {
     const PRole = this.rbacRep.get(TypeRbac.ROLE, dto.parent);
     const PPermission = this.rbacRep.get(TypeRbac.PERMISSION, dto.child);
     const resp = await Promise.all([PRole, PPermission]);
@@ -93,7 +97,7 @@ export class RbacService {
     return response;
   }
 
-  async revokeRoleToUser(dto: RbacAssigmentDto): Promise<boolean> {
+  async revokeRoleToUser(dto: CreateRbacAssigmentDto): Promise<boolean> {
     const PUser = this.userRep.findByEmail(dto.email);
     const PRole = this.rbacRep.get(TypeRbac.ROLE, dto.slug);
     const resp = await Promise.all([PUser, PRole]);
@@ -101,7 +105,7 @@ export class RbacService {
     return response;
   }
 
-  async revokePermissionToUser(dto: RbacAssigmentDto): Promise<boolean> {
+  async revokePermissionToUser(dto: CreateRbacAssigmentDto): Promise<boolean> {
     const PUser = this.userRep.findByEmail(dto.email);
     const PPermission = this.rbacRep.get(TypeRbac.PERMISSION, dto.slug);
     const resp = await Promise.all([PUser, PPermission]);
@@ -109,11 +113,40 @@ export class RbacService {
     return response;
   }
 
-  async revokePermissionToRole(dto: RbacLinkDto): Promise<boolean> {
+  async revokePermissionToRole(dto: CreateRbacLinkDto): Promise<boolean> {
     const PRole = this.rbacRep.get(TypeRbac.ROLE, dto.parent);
     const PPermission = this.rbacRep.get(TypeRbac.PERMISSION, dto.child);
     const resp = await Promise.all([PRole, PPermission]);
     const response = await this.linkRep.revoke(...resp);
+    return response;
+  }
+
+  async getAssigmentsByUser(
+    email: string,
+  ): Promise<[IAssigmentRbacEntity[], number]> {
+    const user = await this.userRep.findByEmail(email);
+    const response = await this.assignmentRep.findByUser(user);
+    response[0] = response[0].map((e) => {
+      return {
+        user: plainToClass(UserDto, e, { excludeExtraneousValues: true }),
+        permission: plainToClass(RbacDto, e, { excludeExtraneousValues: true }),
+      } as RbacAssigmentDto;
+    });
+
+    return response;
+  }
+
+  async getLinksByRole(slug: string): Promise<[ILinkRbacEntity[], number]> {
+    const role = await this.rbacRep.get(TypeRbac.ROLE, slug);
+    const response = await this.linkRep.findByRole(role);
+
+    response[0] = response[0].map((e) => {
+      return {
+        parent: plainToClass(RbacDto, e, { excludeExtraneousValues: true }),
+        child: plainToClass(RbacDto, e, { excludeExtraneousValues: true }),
+      };
+    });
+
     return response;
   }
 }

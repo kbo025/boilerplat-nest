@@ -5,6 +5,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { AssignmentPgEntity } from '../entities/rbac/assigmentPg.entity';
 import { UserPgEntity } from '../entities/user/userPg.entity';
+import { IUserEntity } from 'src/user/entities/user.entity';
+import { IAssigmentRbacEntity } from 'src/rbac/entities/assignment.entity';
 
 export class AssigmentPgRepository implements IAssignmentRepository {
   constructor(
@@ -27,5 +29,13 @@ export class AssigmentPgRepository implements IAssignmentRepository {
     console.log(response);
 
     return true;
+  }
+
+  async findByUser(
+    user: IUserEntity,
+  ): Promise<[IAssigmentRbacEntity[], number]> {
+    const response = await this.assignmentRep.findAndCount({ where: { user } });
+
+    return response;
   }
 }

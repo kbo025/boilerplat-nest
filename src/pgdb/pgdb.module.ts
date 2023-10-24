@@ -7,12 +7,28 @@ import { UserPgEntity } from './entities/user/userPg.entity';
 import { UserPgRepository } from './repositories/UserPg.repository';
 import { IUserRepository } from 'src/user/contracts/IUser.repository';
 import { TesteController } from './controllers/teste.controller';
+import { IRbacRepository } from 'src/rbac/contracts/IRbac.repository';
+import { RbacPgRepository } from './repositories/RbacPg.repository';
+import { ILinkRepository } from 'src/rbac/contracts/ILink.repository';
+import { LinkPgRepository } from './repositories/LinkPg.repository';
+import { IAssignmentRepository } from 'src/rbac/contracts/IAssignment.repository';
+import { AssigmentPgRepository } from './repositories/AssigmentPg.repository';
+import { RbacPgEntity } from './entities/rbac/rbacPg.entity';
+import { LinkPgEntity } from './entities/rbac/linkPg.entity';
+import { AssignmentPgEntity } from './entities/rbac/assigmentPg.entity';
 
 const API_KEY = '12345634';
 const API_KEY_PROD = 'PROD1212121SA';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([UserPgEntity])],
+  imports: [
+    TypeOrmModule.forFeature([
+      UserPgEntity,
+      RbacPgEntity,
+      LinkPgEntity,
+      AssignmentPgEntity,
+    ]),
+  ],
   providers: [
     {
       provide: 'API_KEY',
@@ -38,8 +54,27 @@ const API_KEY_PROD = 'PROD1212121SA';
       provide: IUserRepository,
       useClass: UserPgRepository,
     },
+    {
+      provide: IRbacRepository,
+      useClass: RbacPgRepository,
+    },
+    {
+      provide: ILinkRepository,
+      useClass: LinkPgRepository,
+    },
+    {
+      provide: IAssignmentRepository,
+      useClass: AssigmentPgRepository,
+    },
   ],
-  exports: ['API_KEY', IUserRepository, TypeOrmModule],
+  exports: [
+    'API_KEY',
+    IUserRepository,
+    IRbacRepository,
+    ILinkRepository,
+    IAssignmentRepository,
+    TypeOrmModule,
+  ],
   controllers: [TesteController],
 })
 export class PgdbModule {}

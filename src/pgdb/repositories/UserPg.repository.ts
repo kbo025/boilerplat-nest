@@ -35,7 +35,9 @@ export class UserPgRepository implements IUserRepository {
   }
 
   async findByEmail(email: string): Promise<IUserEntity> {
-    const user = await this.userRep.findOne({ where: { email, active: true } });
+    const user = await this.userRep.findOne({
+      where: { email: email.toLowerCase(), active: true },
+    });
     if (!user) {
       throw new NotFoundException('USER_NOT_FOUND');
     }
@@ -50,7 +52,7 @@ export class UserPgRepository implements IUserRepository {
     }
 
     const user = await this.userRep.save({
-      email: data.email,
+      email: data.email.toLowerCase(),
       hashPassword: await bcrypt.hash(data.password, 10),
     });
 
@@ -99,6 +101,12 @@ export class UserPgRepository implements IUserRepository {
     }
 
     qb.skip((page - 1) * itemsPerPage).take(itemsPerPage);
+
+    if (dto.filters.email) {
+      qb.where('UserPgEntity.email like :email', {
+        email: `%${dto.filters.email}%`,
+      });
+    }
 
     const totalItems = await qb.getCount();
     const { entities } = await qb.getRawAndEntities();

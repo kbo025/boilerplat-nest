@@ -2,12 +2,18 @@ import {
   Controller,
   Delete,
   Post,
+  Get,
   HttpCode,
   HttpStatus,
   UseGuards,
   Query,
 } from '@nestjs/common';
-import { RbacLinkDto, RbacAssigmentDto } from '../dtos/rbac.dto';
+import {
+  CreateRbacLinkDto,
+  RbacAssigmentDto,
+  CreateRbacAssigmentDto,
+  RbacLinkDto,
+} from '../dtos/rbac.dto';
 import { RbacService } from '../services/rbac.service';
 import { ApiKeyGuard } from 'src/auth/guards/api-key.guard';
 
@@ -16,16 +22,30 @@ import { ApiKeyGuard } from 'src/auth/guards/api-key.guard';
 export class RbacController {
   constructor(private readonly rbacService: RbacService) {}
 
+  @Get('user/:email')
+  @HttpCode(HttpStatus.CREATED)
+  async getAssigments(
+    @Query() email: string,
+  ): Promise<[RbacAssigmentDto[], number]> {
+    const response = await this.rbacService.getAssigmentsByUser(email);
+
+    return response;
+  }
+
   @Post('user/:email/role/:slug')
   @HttpCode(HttpStatus.CREATED)
-  async assingRoleToUser(@Query() dto: RbacAssigmentDto): Promise<boolean> {
+  async assingRoleToUser(
+    @Query() dto: CreateRbacAssigmentDto,
+  ): Promise<boolean> {
     const response = await this.rbacService.assingRoleToUser(dto);
     return response;
   }
 
   @Delete('user/:email/role/:slug')
   @HttpCode(HttpStatus.CREATED)
-  async revokeRoleToUser(@Query() dto: RbacAssigmentDto): Promise<boolean> {
+  async revokeRoleToUser(
+    @Query() dto: CreateRbacAssigmentDto,
+  ): Promise<boolean> {
     const response = await this.rbacService.revokeRoleToUser(dto);
     return response;
   }
@@ -33,7 +53,7 @@ export class RbacController {
   @Post('user/:email/permission/:slug')
   @HttpCode(HttpStatus.CREATED)
   async assingPermissionToUser(
-    @Query() dto: RbacAssigmentDto,
+    @Query() dto: CreateRbacAssigmentDto,
   ): Promise<boolean> {
     const response = await this.rbacService.assingPermissionToUser(dto);
     return response;
@@ -42,22 +62,36 @@ export class RbacController {
   @Delete('user/:email/permission/:slug')
   @HttpCode(HttpStatus.CREATED)
   async revokePermissionToUser(
-    @Query() dto: RbacAssigmentDto,
+    @Query() dto: CreateRbacAssigmentDto,
   ): Promise<boolean> {
     const response = await this.rbacService.revokePermissionToUser(dto);
     return response;
   }
 
+  @Get('role/:slug')
+  @HttpCode(HttpStatus.CREATED)
+  async getLinks(
+    @Query('slug') slug: string,
+  ): Promise<[RbacLinkDto[], number]> {
+    const response = await this.rbacService.getLinksByRole(slug);
+
+    return response;
+  }
+
   @Post('role/:parent/permission/:child')
   @HttpCode(HttpStatus.CREATED)
-  async assingPermissionToRole(@Query() dto: RbacLinkDto): Promise<boolean> {
+  async assingPermissionToRole(
+    @Query() dto: CreateRbacLinkDto,
+  ): Promise<boolean> {
     const response = await this.rbacService.assingPermissionToRole(dto);
     return response;
   }
 
   @Delete('role/:parent/permission/:child')
   @HttpCode(HttpStatus.CREATED)
-  async revokePermissionToRole(@Query() dto: RbacLinkDto): Promise<boolean> {
+  async revokePermissionToRole(
+    @Query() dto: CreateRbacLinkDto,
+  ): Promise<boolean> {
     const response = await this.rbacService.revokePermissionToRole(dto);
     return response;
   }

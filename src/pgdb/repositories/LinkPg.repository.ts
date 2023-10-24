@@ -5,6 +5,7 @@ import { BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { LinkPgEntity } from '../entities/rbac/linkPg.entity';
+import { ILinkRbacEntity } from 'src/rbac/entities/link.entity';
 
 export class LinkPgRepository implements ILinkRepository {
   constructor(
@@ -28,5 +29,13 @@ export class LinkPgRepository implements ILinkRepository {
     console.log(response);
 
     return true;
+  }
+
+  async findByRole(role: RbacPgEntity): Promise<[ILinkRbacEntity[], number]> {
+    const response = await this.linkRep.findAndCount({
+      where: { parent: role },
+    });
+
+    return response;
   }
 }
