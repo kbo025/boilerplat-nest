@@ -8,10 +8,15 @@ import { UserModule } from 'src/user/user.module';
 import { PassportModule } from '@nestjs/passport';
 import { config } from 'src/config';
 import { ConfigType } from '@nestjs/config';
+import { RbacModule } from 'src/rbac/rbac.module';
+import { UsersService } from 'src/user/services/users.service';
+import { IUserRepository } from 'src/user/contracts/IUser.repository';
+import { UserPgRepository } from 'src/pgdb/repositories/UserPg.repository';
+import { PgdbModule } from 'src/pgdb/pgdb.module';
 
 @Module({
   imports: [
-    UserModule,
+    RbacModule,
     PassportModule,
     JwtModule.registerAsync({
       inject: [config.KEY],
@@ -22,8 +27,14 @@ import { ConfigType } from '@nestjs/config';
         };
       },
     }),
+    PgdbModule,
   ],
-  providers: [AuthService, LocalStrategy, JwtStrategy],
+  providers: [
+    AuthService,
+    LocalStrategy,
+    JwtStrategy,
+    { provide: IUserRepository, useClass: UserPgRepository },
+  ],
   controllers: [AuthController],
 })
 export class AuthModule {}

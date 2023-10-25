@@ -18,10 +18,9 @@ export class AuthController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('test-auth')
+  @Get('me')
   testLogin(@Req() req: Request) {
-    const user = req.user as IUserEntity;
-    return this.authService.generateJwt(user);
+    return req.user;
   }
 
   @UseGuards(JwtAuthGuard)

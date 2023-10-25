@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-// import { AuthModule } from './auth/auth.module';
+import { AuthModule } from './auth/auth.module';
 // import { DomainModule } from './domain/domain.module';
 import { UserModule } from './user/user.module';
 // import { CategoryModule } from './category/category.module';
@@ -12,7 +12,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
   imports: [
-    // AuthModule,
+    AuthModule,
     // DomainModule,
     UserModule,
     // CategoryModule,

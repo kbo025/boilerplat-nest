@@ -102,7 +102,7 @@ export class UserPgRepository implements IUserRepository {
 
     qb.skip((page - 1) * itemsPerPage).take(itemsPerPage);
 
-    if (dto.filters.email) {
+    if (dto.filters?.email) {
       qb.where('UserPgEntity.email like :email', {
         email: `%${dto.filters.email}%`,
       });
