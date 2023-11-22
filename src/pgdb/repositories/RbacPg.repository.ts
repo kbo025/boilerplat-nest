@@ -140,4 +140,16 @@ export class RbacPgRepository implements IRbacRepository {
 
     return true;
   }
+
+  async upsertInBatch(type: TypeRbac, slugs: string[]): Promise<RbacDto[]> {
+    const promises = [];
+    for (const slug of slugs) {
+      const current = this.rbacRep.upsert({ slug, type }, ['unique_slug']);
+      promises.push(current);
+    }
+
+    const resp = await Promise.all(promises);
+
+    return resp;
+  }
 }

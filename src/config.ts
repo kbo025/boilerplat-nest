@@ -21,6 +21,9 @@ export const config = registerAs('config', () => {
       expireIn: process.env.JWT_EXPIRE_IN,
     },
     apiKey: process.env.API_KEY,
+    superadminRole: process.env.SUPERADMIN_ROLE,
+    superadminEmail: process.env.SUPERADMIN_EMAIL,
+    rbacInsert: process.env.RBAC_INSERT,
   };
 });
 
@@ -33,4 +36,7 @@ export const configSchema = Joi.object({
   POSTGRES_HOST: Joi.string().hostname().required(),
   JWT_SECRET: Joi.string().required(),
   JWT_EXPIRE_IN: Joi.string().required(),
+  SUPERADMIN_ROLE: Joi.string().required(),
+  SUPERADMIN_EMAIL: Joi.string().required().email(),
+  RBAC_INSERT: Joi.boolean(),
 });

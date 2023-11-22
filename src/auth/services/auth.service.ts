@@ -1,16 +1,22 @@
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  Global,
+  Inject,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { compare } from 'bcrypt';
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { UsersService } from 'src/user/services/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { IUserEntity } from 'src/user/entities/user.entity';
 import { AccessTokenInf, PayloadToken } from '../models/payloadToken.entity';
-import { IUserRepository } from 'src/user/contracts/IUser.repository';
+import { IAuthUserService } from '../contracts/user.service';
+import { IAuthRbacService } from '../contracts/rbac.service';
 
+@Global()
 @Injectable()
 export class AuthService {
   constructor(
-    @Inject(IUserRepository) private userRepository: IUserRepository,
+    @Inject(IAuthUserService) private userRepository: IAuthUserService,
+    @Inject(IAuthRbacService) private rbacService: IAuthRbacService,
     private jwtService: JwtService,
   ) {}
 
@@ -29,12 +35,32 @@ export class AuthService {
     }
   }
 
-  generateJwt(user: IUserEntity): AccessTokenInf {
+  async generateJwt(user: IUserEntity): Promise<AccessTokenInf> {
     const payload: PayloadToken = { sub: user.id, email: user.email };
+    const { permissions, roles } = await this.rbacService.getAllByUser(user);
     const { id, email } = user;
     return {
       access_token: this.jwtService.sign(payload),
-      user: { id, email },
+      user: {
+        id,
+        email,
+        roles: roles.map((e) => e.slug),
+        permissions: permissions.map((e) => e.slug),
+      },
     };
+  }
+
+  async is(ati: AccessTokenInf, slug: string) {
+    const user = await this.userRepository.findByEmail(ati.user.email);
+    const response = await this.rbacService.is(user, slug);
+
+    return { response };
+  }
+
+  async can(ati: AccessTokenInf, slug: string) {
+    const user = await this.userRepository.findByEmail(ati.user.email);
+    const response = await this.rbacService.can(user, slug);
+
+    return { response };
   }
 }

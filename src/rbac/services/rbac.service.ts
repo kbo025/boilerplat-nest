@@ -19,9 +19,13 @@ import { IUserRepository } from 'src/user/contracts/IUser.repository';
 import { IAssigmentRbacEntity } from '../entities/assignment.entity';
 import { ILinkRbacEntity } from '../entities/link.entity';
 import { UserDto } from 'src/user/dtos/user.dto';
+import { IAuthRbacService } from 'src/auth/contracts/rbac.service';
+import { IUserEntity } from 'src/user/entities/user.entity';
+import { IRoleEntity } from '../entities/role.entity';
+import { IPermissionEntity } from '../entities/permission.entity';
 
 @Injectable()
-export class RbacService {
+export class RbacService implements IAuthRbacService {
   constructor(
     @Inject(IRbacRepository) private readonly rbacRep: IRbacRepository,
     @Inject(IUserRepository) private readonly userRep: IUserRepository,
@@ -148,5 +152,76 @@ export class RbacService {
     });
 
     return response;
+  }
+
+  async is(user: IUserEntity, slug: string): Promise<boolean> {
+    const { roles } = await this.getAllByUser(user);
+
+    return roles.find((e) => e.slug == slug) ? true : false;
+  }
+
+  async can(user: IUserEntity, slug: string): Promise<boolean> {
+    const { permissions } = await this.getAllByUser(user);
+
+    return permissions.find((e) => e.slug == slug) ? true : false;
+  }
+
+  async getAllByUser(
+    user: IUserEntity,
+  ): Promise<{ roles: IRoleEntity[]; permissions: IPermissionEntity[] }> {
+    const respAssig = await this.assignmentRep.findByUser(user);
+    const assigments = respAssig[0];
+    const roles = assigments
+      .filter((e) => e.permission.type == TypeRbac.PERMISSION)
+      .map(
+        (e) =>
+          plainToClass(RbacDto, e, {
+            excludeExtraneousValues: true,
+          }) as IRoleEntity,
+      );
+
+    const permissions = assigments
+      .filter((e) => e.permission.type == TypeRbac.ROLE)
+      .map(
+        (e) =>
+          plainToClass(RbacDto, e, {
+            excludeExtraneousValues: true,
+          }) as IPermissionEntity,
+      );
+
+    let slugs = assigments.map((e) => e.permission.slug);
+    while (slugs.length > 0) {
+      const respPermissions = await this.linkRep.findByAssigments(slugs);
+      slugs = respPermissions.map((e) => e.child.slug);
+      const childRoles = respPermissions.map(
+        (e) =>
+          plainToClass(RbacDto, e, {
+            excludeExtraneousValues: true,
+          }) as IRoleEntity,
+      );
+
+      roles.push(...childRoles);
+
+      const childPerm = respPermissions.map(
+        (e) =>
+          plainToClass(RbacDto, e, {
+            excludeExtraneousValues: true,
+          }) as IPermissionEntity,
+      );
+
+      permissions.push(...childPerm);
+    }
+
+    return { roles, permissions };
+  }
+
+  async saveAllRoles(roles: string[]): Promise<boolean> {
+    await this.rbacRep.upsertInBatch(TypeRbac.ROLE, roles);
+    return true;
+  }
+
+  async saveAllPermissions(permissions: string[]): Promise<boolean> {
+    await this.rbacRep.upsertInBatch(TypeRbac.PERMISSION, permissions);
+    return true;
   }
 }

@@ -3,7 +3,7 @@ import { TypeRbac } from 'src/rbac/entities/base.entity';
 import { RbacPgEntity } from '../entities/rbac/rbacPg.entity';
 import { BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { LinkPgEntity } from '../entities/rbac/linkPg.entity';
 import { ILinkRbacEntity } from 'src/rbac/entities/link.entity';
 
@@ -34,6 +34,17 @@ export class LinkPgRepository implements ILinkRepository {
   async findByRole(role: RbacPgEntity): Promise<[ILinkRbacEntity[], number]> {
     const response = await this.linkRep.findAndCount({
       where: { parent: role },
+    });
+
+    return response;
+  }
+
+  async findByAssigments(parents: string[]): Promise<ILinkRbacEntity[]> {
+    const response = await this.linkRep.find({
+      where: { parent: { slug: In(parents) } },
+      relations: {
+        child: true,
+      },
     });
 
     return response;
