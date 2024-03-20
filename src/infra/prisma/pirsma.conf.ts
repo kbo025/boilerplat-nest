@@ -14,7 +14,7 @@ const auditoryFieldsExt = Prisma.defineExtension({
           where,
           data: {
             deletedAt: new Date(),
-            acttive: false,
+            active: false,
           },
         });
       },
@@ -27,7 +27,7 @@ const auditoryFieldsExt = Prisma.defineExtension({
           where,
           data: {
             deletedAt: new Date(),
-            acttive: false,
+            active: false,
           },
         });
       },
@@ -46,10 +46,10 @@ const auditoryFieldsExt = Prisma.defineExtension({
             deletedAt: null,
             active: true,
           };
-        } else if (operation === 'update') {
+        } else if (operation === 'update' || operation === 'updateMany') {
           args.data = {
             ...args.data,
-            updatedAt: null,
+            updatedAt: new Date(),
           };
         }
 
