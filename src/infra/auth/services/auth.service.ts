@@ -1,12 +1,6 @@
-import {
-  Global,
-  Inject,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
-import { compare } from 'bcrypt';
+import { Global, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { AccessTokenInf, PayloadToken } from '../models/payloadToken.entity';
+import { AccessTokenInf } from '../models/payloadToken.entity';
 import { IUserEntity } from 'src/domain/entities/IUser.entity';
 
 @Global()
@@ -27,6 +21,7 @@ export class AuthService {
     // } catch {
     //   throw new UnauthorizedException('NOT_ALLOW');
     // }
+    console.log(`${email} ${password}`);
     throw new UnauthorizedException('NOT_ALLOW');
   }
 
@@ -43,6 +38,7 @@ export class AuthService {
     //     permissions: permissions.map((e) => e.slug),
     //   },
     // };
+    console.log(JSON.stringify(user));
     throw new UnauthorizedException('NOT_ALLOW');
   }
 
@@ -51,6 +47,8 @@ export class AuthService {
     // const response = await this.rbacService.is(user, slug);
 
     // return { response };
+    console.log(JSON.stringify(ati));
+    console.log(JSON.stringify(slug));
     throw new UnauthorizedException('NOT_ALLOW');
   }
 
@@ -59,6 +57,8 @@ export class AuthService {
     // const response = await this.rbacService.can(user, slug);
 
     // return { response };
+    console.log(JSON.stringify(ati));
+    console.log(JSON.stringify(slug));
     throw new UnauthorizedException('NOT_ALLOW');
   }
 }

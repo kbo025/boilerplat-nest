@@ -36,6 +36,7 @@ const auditoryFieldsExt = Prisma.defineExtension({
   query: {
     $allModels: {
       async $allOperations({ model, operation, args, query }) {
+        console.log(model);
         if (
           operation === 'findUnique' ||
           operation === 'findFirst' ||
